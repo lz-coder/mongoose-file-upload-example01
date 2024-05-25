@@ -25,7 +25,7 @@ let gfs;
 conn.once('open', () => {
   // Init stream
   gfs = Grid(conn.db, mongoose.mongo);
-  gfs.collection("uploads");
+  gfs.collection('uploads');
 });
 
 
@@ -70,13 +70,20 @@ app.get("/files", async (req, res) => {
   } catch (error) {
     return res.status(500).json({ err: error.message });
   }
-  // await gfs.files.find().toArray((err, files) => {
-  //   console.log("Inside gfs");
-  //   if (!files || files.length === 0) {
-  //     return res.status(404).json({ err: "No files exist" });
-  //   }
-  //   return res.json(files);
-  // });
+});
+
+app.get("/video/:filename", async (req, res) => {
+  const file = await gfs.files.findOne({ filename: req.params.filename });
+
+  if (!file || file.lenght == 0) {
+    return res.status(404).json({ err: "No file exists" });
+  }
+  if (file.contentType === "video/mp4") {
+    const readstream = await gfs.createReadStream(file.filename);
+    readstream.pipe(res);
+  } else {
+    res.status(404).json({ err: "Not a video" });
+  }
 });
 
 
