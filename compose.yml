@@ -1,0 +1,25 @@
+---
+services:
+  mongo:
+    image: docker.io/library/mongo:7.0
+    container_image: mongo
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=root1234
+    restart: unless-stopped
+    ports:
+      - 27017:27017
+    exposes:
+      - 27017
+    volumes:
+      - ./mongo_db/db:/data/db:rw,z
+      - ./mongo_db/dev.archive:/Databases/dev.archiver:rw,z
+      - ./mongo_db/production:/Databases/production:rw,z
+    networks:
+      - mongonet
+
+volumes:
+  database:
+
+networks:
+  mongonet: {}
